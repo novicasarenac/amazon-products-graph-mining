@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.4/lodash.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/alchemyjs/0.4.2/alchemy.min.css">
+    </head>
+    <body>
+        <div class="alchemy" id="alchemy"></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/alchemyjs/0.4.2/alchemy.min.js"></script>
+        <script type="text/javascript">
+            alchemy.begin({
+                dataSource: "nodes.json", 
+                nodeCaption: 'name', 
+                nodeMouseOver: 'name',
+                cluster: true,
+                clusterColours: ["#1B9E77","#D95F02","#E7298A","#66A61E"]})
+        </script>
+    </body>
+</html>

@@ -1,0 +1,4 @@
+*.pyc
+.vscode
+src/data/*
+!src/data/.gitkeep
