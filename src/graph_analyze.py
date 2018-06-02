@@ -29,8 +29,11 @@ class GraphManager():
         query = 'match (p1:Product)-[:ALSO_BOUGHT]->(p2:Product) \
         return p1.asin as asin1, p2.asin as asin2'
         result = self.graph_database.run(query)
+        edges = []
         for relationship in result:
-            self.graph.add_edge(relationship['asin1'], relationship['asin2'])
+            edges.append((relationship['asin1'], relationship['asin2']))
+        print('===> Processing edges')
+        self.graph.add_edges(edges)
         print('===> Read {} edges\n'.format(self.graph.ecount()))
 
     def find_clusters(self):
