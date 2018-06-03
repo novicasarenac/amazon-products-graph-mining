@@ -1,5 +1,6 @@
 import igraph as ig
 import numpy as np
+import json
 
 from py2neo import Graph
 from constants import CLUSTERS_DATA, CLIQUE_DATA
@@ -11,6 +12,7 @@ class GraphManager():
         self.graph_database = Graph(password='admin')
         self.read_nodes()
         self.read_edges()
+        self.simplify_graph()
         self.find_clusters()
         self.find_largest_clique()
 
@@ -32,13 +34,18 @@ class GraphManager():
         edges = []
         for relationship in result:
             edges.append((relationship['asin1'], relationship['asin2']))
-        print('===> Processing edges')
+        print('===> Processing edges\n')
         self.graph.add_edges(edges)
         print('===> Read {} edges\n'.format(self.graph.ecount()))
+    
+    def simplify_graph(self, remove_multiple_edges=True, remove_self_loops=True):
+        print('===> Simplifying graph\n')
+        self.graph.simplify(multiple=remove_multiple_edges, loops=remove_self_loops)
 
     def find_clusters(self):
         print('===> Performing clustering\n')
-        clusters = self.graph.community_edge_betweenness(directed=False)
+        # clusters = self.graph.community_edge_betweenness(directed=False)
+        clusters = self.graph.community_fastgreedy()
         clusters = clusters.as_clustering()
         subgraph_vertices = []
         with open(CLUSTERS_DATA, 'w') as outfile:
