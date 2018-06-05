@@ -3,7 +3,7 @@ import numpy as np
 import json
 
 from py2neo import Graph
-from subclusters_analysis import SubclasterAnalysis
+from subclusters_analysis import SubclusterAnalysis
 from constants import CLUSTERS_DATA, CLIQUE_DATA
 
 
@@ -15,7 +15,7 @@ class GraphManager():
         self.read_edges()
         self.simplify_graph()
         self.find_clusters()
-        # self.find_largest_clique()
+        self.find_largest_clique()
 
     def read_nodes(self):
         print('===> Reading nodes\n')
@@ -62,7 +62,7 @@ class GraphManager():
                 cluster = clusters[index]
                 if subcluster_analysis and (500 < len(cluster) < 5000) and not analyzed:
                     temp_subgraph = self.graph.subgraph([self.graph.vs[member].attributes()['name'] for member in cluster])
-                    subcluster_analysis = SubclasterAnalysis(temp_subgraph)
+                    subcluster_analysis = SubclusterAnalysis(temp_subgraph)
                     analyzed = subcluster_analysis.analuze()
 
                 print('Cluster {} size: {} \n'.format(index, len(cluster)))
@@ -77,8 +77,7 @@ class GraphManager():
                     node = self.graph.vs[member].attributes()
                     if node['name'] == max_degree_node_id:
                         node['root'] = True
-                    else:
-                        node['cluster'] = index
+                    node['cluster'] = index
                     node['id'] = node['name']
                     subgraph_vertices.append(node['name'])
                     if counter < len(cluster) or index < (len(clusters) - 1):

@@ -5,7 +5,7 @@ import json
 from constants import SUBGRAPH_DATA
 
 
-class SubclasterAnalysis():
+class SubclusterAnalysis():
     def __init__(self, subgraph):
         print('===> Subgraph created \n')
         self.graph = subgraph
