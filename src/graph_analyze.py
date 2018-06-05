@@ -3,6 +3,7 @@ import numpy as np
 import json
 
 from py2neo import Graph
+from subclusters_analysis import SubclasterAnalysis
 from constants import CLUSTERS_DATA, CLIQUE_DATA
 
 
@@ -14,7 +15,7 @@ class GraphManager():
         self.read_edges()
         self.simplify_graph()
         self.find_clusters()
-        self.find_largest_clique()
+        # self.find_largest_clique()
 
     def read_nodes(self):
         print('===> Reading nodes\n')
@@ -42,19 +43,29 @@ class GraphManager():
         print('===> Simplifying graph\n')
         self.graph.simplify(multiple=remove_multiple_edges, loops=remove_self_loops)
 
-    def find_clusters(self):
+    def find_clusters(self, subcluster_analysis=True):
         print('===> Performing clustering\n')
         # clusters = self.graph.community_edge_betweenness(directed=False)
-        clusters = self.graph.community_fastgreedy()
-        clusters = clusters.as_clustering()
+        # clusters = self.graph.community_fastgreedy()
+        clusters = self.graph.community_leading_eigenvector(clusters=20)
+        print('===> Total clusters: {} \n'.format(len(clusters)))
+        # clusters = clusters.as_clustering() # use with community fastgreedy
         subgraph_vertices = []
+        if subcluster_analysis:
+            analyzed = False
+
         with open(CLUSTERS_DATA, 'w') as outfile:
             # nodes
             outfile.write("{ \"nodes\": [\n")
-            for index in range(0, 10):
-                print('Cluster: {}'.format(index))
+            for index in range(0, len(clusters)):
                 counter = 0
                 cluster = clusters[index]
+                if subcluster_analysis and (500 < len(cluster) < 5000) and not analyzed:
+                    temp_subgraph = self.graph.subgraph([self.graph.vs[member].attributes()['name'] for member in cluster])
+                    subcluster_analysis = SubclasterAnalysis(temp_subgraph)
+                    analyzed = subcluster_analysis.analuze()
+
+                print('Cluster {} size: {} \n'.format(index, len(cluster)))
                 # max degree in cluster
                 current_cluster = [self.graph.vs[member]['name'] for member in cluster]
                 degrees = self.graph.degree(current_cluster)
@@ -70,7 +81,7 @@ class GraphManager():
                         node['cluster'] = index
                     node['id'] = node['name']
                     subgraph_vertices.append(node['name'])
-                    if counter < len(cluster) or index < 9:
+                    if counter < len(cluster) or index < (len(clusters) - 1):
                         json_data = json.dumps(node) + ','
                     else:
                         json_data = json.dumps(node)
