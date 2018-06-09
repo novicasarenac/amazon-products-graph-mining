@@ -4,3 +4,4 @@ pandas
 python-igraph
 ipdb
 numpy
+matplotlib
