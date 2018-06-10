@@ -88,7 +88,7 @@ class GraphManager():
                     outfile.write('\n')
             outfile.write("],\n")
 
-            #edges
+            # edges
             outfile.write("\"edges\": [\n")
             subgraph = self.graph.subgraph(subgraph_vertices)
             counter = 0
